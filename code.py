@@ -8,14 +8,13 @@ def cal_pop_fitness(pop):
     print(fitness)
     return fitness
 
-
 def select_mating_pool(pop, fitness, num_parents):
     parents = numpy.empty((num_parents, pop.shape[1]))
     for parent_num in range(num_parents):
-        max_fitness_idx = numpy.where(fitness == numpy.max(fitness))
-        max_fitness_idx = max_fitness_idx[0][0]
-        parents[parent_num, :] = pop[max_fitness_idx, :]
-        fitness[max_fitness_idx] = -99999999999
+        min_fitness_idx = numpy.where(fitness == numpy.min(fitness))
+        min_fitness_idx = min_fitness_idx[0][0]
+        parents[parent_num, :] = pop[min_fitness_idx, :]
+        fitness[min_fitness_idx] = 99999999999
     return parents
 
 
@@ -69,7 +68,7 @@ for generation in range(num_generations):
     print(fitness)
 
 fitness = cal_pop_fitness(new_population)
-best_match_idx = numpy.where(fitness == numpy.max(fitness))
+best_match_idx = numpy.where(fitness == numpy.min(fitness))
 
 weights_vector = new_population[best_match_idx, :]
 
