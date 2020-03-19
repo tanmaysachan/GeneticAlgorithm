@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 from client_moodle import get_errors, submit
 
 team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
@@ -8,10 +8,11 @@ def cal_pop_fitness(pop):
     print(fitness)
     return fitness
 
+
 def select_mating_pool(pop, fitness, num_parents):
-    parents = numpy.empty((num_parents, pop.shape[1]))
+    parents = np.empty((num_parents, pop.shape[1]))
     for parent_num in range(num_parents):
-        min_fitness_idx = numpy.where(fitness == numpy.min(fitness))
+        min_fitness_idx = np.where(fitness == np.min(fitness))
         min_fitness_idx = min_fitness_idx[0][0]
         parents[parent_num, :] = pop[min_fitness_idx, :]
         fitness[min_fitness_idx] = 99999999999
@@ -19,8 +20,8 @@ def select_mating_pool(pop, fitness, num_parents):
 
 
 def crossover(parents, offspring_size):
-    offspring = numpy.empty(offspring_size)
-    crossover_point = numpy.uint8(offspring_size[1]/2)
+    offspring = np.empty(offspring_size)
+    crossover_point = np.uint8(offspring_size[1]/2)
 
     for k in range(offspring_size[0]):
         parent1_idx = k%parents.shape[0]
@@ -32,10 +33,13 @@ def crossover(parents, offspring_size):
 
 def mutation(offspring_crossover):
     for idx in range(offspring_crossover.shape[0]):
-        random_value = numpy.random.uniform(-1.0, 1.0, 1)
+        random_value = np.random.uniform(-1.0, 1.0, 1)
         offspring_crossover[idx, 4] = offspring_crossover[idx, 4] + random_value
     return offspring_crossover
 
+
+def distort(vector):
+    return np.add(vector, np.random.uniform(low=-1.0, high=1.0, size=(len(vector))))
 
 num_weights = 11
 
@@ -45,10 +49,15 @@ num_parents_mating = 4
 
 pop_size = (sol_per_pop, num_weights)
 
-new_population = numpy.random.uniform(low=-4.0, high=4.0, size=pop_size)
+overfit_model = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+
+new_population = np.array([distort(overfit_model) for i in range(sol_per_pop)])
+
 print(new_population)
+print(new_population.shape)
 
 num_generations = 5
+
 for generation in range(num_generations):
     print("Generation : ", generation)
     fitness = cal_pop_fitness(new_population)
@@ -68,10 +77,14 @@ for generation in range(num_generations):
     print(fitness)
 
 fitness = cal_pop_fitness(new_population)
-best_match_idx = numpy.where(fitness == numpy.min(fitness))
+best_match_idx = np.where(fitness == np.min(fitness))[0][0]
 
 weights_vector = new_population[best_match_idx, :]
 
 print("weights_vector")
 print(weights_vector)
 print("Best solution fitness : ", fitness[best_match_idx])
+
+#submit stuff
+
+submit(team_secret_key, list(weights_vector))
