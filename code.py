@@ -50,6 +50,7 @@ def distort(vector):
     to_ret = []
     for i in vector:
         to_ret.append(i + np.random.uniform(low=-1*(i/500), high=i/500, size=1)[0])
+
     return np.array(to_ret)
 
 num_weights = 11
