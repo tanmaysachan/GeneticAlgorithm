@@ -62,7 +62,7 @@ fil = open('hellokitty.txt', 'r')
 
 model = fil.readline()
 model = model.strip('[]').split(',')
-model = [int(i) for i in model]
+model = [float(i) for i in model]
 
 #model = [ 0.00000000e+00,  1.28200354e-01, -6.05800043e+00,  5.29444159e-02,
 #  3.63051580e-02,  7.99636168e-05, -5.97183727e-05, -1.33975300e-07,
