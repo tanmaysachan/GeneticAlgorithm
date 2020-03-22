@@ -5,29 +5,35 @@ team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
 
 
 def cal_pop_fitness(pop):
-    fitness = [get_errors(team_secret_key, list(i)) for i in pop]
-    fitness = [abs(i[0]-i[1])+abs(i[0]*0.1) for i in fitness]
-    print(fitness)
+    # fitness = [get_errors(team_secret_key, list(i)) for i in pop]
+    fitness = [[i,2*i] for i in range(len(pop))]
+    # fitness = [abs(i[0]-i[1])+abs(i[1]*0.5) for i in fitness]
+    fitness = [i[0]*0.7+i[1] for i in fitness]
+    # print(fitness)
     return fitness
 
 
 def select_mating_pool(pop, fitness, num_parents):
     parents = np.empty((num_parents, pop.shape[1]))
+    # can change to column stack then argsort and split firse
+    # looks cleaner
+    # but slower (?)
     for parent_num in range(num_parents):
         min_fitness_idx = np.where(fitness == np.min(fitness))
         min_fitness_idx = min_fitness_idx[0][0]
-        parents[parent_num, :] = pop[min_fitness_idx, :]
-        fitness[min_fitness_idx] = 99999999999
+        parents[parent_num, : ] = pop[min_fitness_idx, : ]
+        fitness[min_fitness_idx] = 1e1000
+    # print(parents)
     return parents
 
 
 def crossover(parents, offspring_size):
     offspring = np.empty(offspring_size)
-    crossover_point = np.uint8(offspring_size[1]/2)
 
     for k in range(offspring_size[0]):
-        parent1_idx = k%parents.shape[0]
-        parent2_idx = (k+1)%parents.shape[0]
+        parent1_idx = np.random.randint(0,parents.shape[0])
+        parent2_idx = np.random.randint(0,parents.shape[0])
+        crossover_point = np.random.randint(1,offspring_size[0])
         offspring[k, 0:crossover_point] = parents[parent1_idx, 0:crossover_point]
         offspring[k, crossover_point:] = parents[parent2_idx, crossover_point:]
     return offspring
@@ -36,14 +42,18 @@ def crossover(parents, offspring_size):
 def mutation(offspring_crossover):
     for idx in range(offspring_crossover.shape[0]):
         while(True):
-            cur = offspring_crossover[idx, 4]
+            mutate_index = np.random.randint(0,10)
+            cur = offspring_crossover[idx, mutate_index]
             random_value = np.random.uniform(-1*(cur/700), (cur/700), 1)
-            if abs((offspring_crossover[idx, 4] + random_value)[0]) <= 10:
-                offspring_crossover[idx, 4] = offspring_crossover[idx, 4] + random_value
+            if abs((offspring_crossover[idx, mutate_index] + random_value)[0]) <= 10:
+                offspring_crossover[idx, mutate_index] = offspring_crossover[idx, mutate_index] + random_value
                 break
             else:
                 continue
     return offspring_crossover
+
+def error(error_value):
+    print(error_value,sum(error_value))
 
 
 def distort(vector):
@@ -55,24 +65,24 @@ def distort(vector):
 
 num_weights = 11
 
-population = 10
+population = 20
 
-num_parents_mating = 4
+num_parents_mating = 10
 
-fil = open('hellokitty.txt', 'r')
+fil = open('randikitty.txt', 'r')
 
 model = fil.readline()
 model = model.strip('[]').split(',')
 model = [float(i) for i in model]
-
+prev_error = cal_pop_fitness([model])
+print(prev_error)
 #model = [ 0.00000000e+00,  1.28200354e-01, -6.05800043e+00,  5.29444159e-02,
 #  3.63051580e-02,  7.99636168e-05, -5.97183727e-05, -1.33975300e-07,
 #  3.54504234e-08,  4.36850525e-11, -6.90589558e-12]
 
 new_population = np.array([distort(model) for i in range(population)])
-
 # generations to train for
-num_generations = 30
+num_generations = 1
 
 for generation in range(num_generations):
     print("Generation : ", generation)
@@ -104,12 +114,14 @@ print("weights_vector")
 print(weights_vector)
 print("Best solution fitness : ", fitness[best_match_idx])
 
-file = open("hellokitty.txt", 'w+')
+file = open("lulli.txt", 'w+')
 file.write(str(list(weights_vector)))
 
 print("errors:")
-print(get_errors(team_secret_key, list(weights_vector)))
+error(get_errors(team_secret_key, list(weights_vector)))
+new_error = cal_pop_fitness([weights_vector])
 
 # submit stuff
-
-submit(team_secret_key, list(weights_vector))
+if new_error<prev_error:
+    print('BETTER :):):):):)')
+    submit(team_secret_key, list(weights_vector))
