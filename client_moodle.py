@@ -49,10 +49,11 @@ if __name__ == "__main__":
     Replace "test" with your secret ID and just run this file 
     to verify that the server is working for your ID.
     """
-
-    err = get_errors('I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl', list(-np.arange(0,1.1,0.1)))
+    key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
+    key2 =  'ggtmRNHQbP3d1E64nUBDeasbxtXKeoM6mhAxzJ4iMwzUhqhhfD' # fiza - team10
+    err = get_errors(key2, list(-np.arange(0,1.1,0.1)))
     assert len(err) == 2
 
-    submit_status = submit('I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl', list(-np.arange(0,1.1,0.1)))
+    submit_status = submit(key2, list(-np.arange(0,1.1,0.1)))
     assert "submitted" in submit_status
     

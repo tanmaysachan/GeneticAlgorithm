@@ -1,14 +1,15 @@
 import numpy as np
 from client_moodle import get_errors, submit
 
-team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
+# team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
+team_secret_key = 'iYL7HCll9GU7hDiil3sQKqnJJX107Zs2YD4dLDeQWzdWpMInCr' # Fiza - team10
 
 
 def cal_pop_fitness(pop):
-    # fitness = [get_errors(team_secret_key, list(i)) for i in pop]
-    fitness = [[i,2*i] for i in range(len(pop))]
-    # fitness = [abs(i[0]-i[1])+abs(i[1]*0.5) for i in fitness]
-    fitness = [i[0]*0.7+i[1] for i in fitness]
+    fitness = [get_errors(team_secret_key, list(i)) for i in pop]
+    # fitness = [[i,2*i] for i in range(len(pop))]
+    fitness = [abs(i[0]-i[1])+abs(i[1]*0.5) for i in fitness]
+    # fitness = [i[0]*0.3+i[1] for i in fitness]
     # print(fitness)
     return fitness
 
@@ -65,11 +66,11 @@ def distort(vector):
 
 num_weights = 11
 
-population = 20
+population = 5
 
-num_parents_mating = 10
+num_parents_mating = 3
 
-fil = open('randikitty.txt', 'r')
+fil = open('lulli.txt', 'r')
 
 model = fil.readline()
 model = model.strip('[]').split(',')
@@ -82,7 +83,7 @@ print(prev_error)
 
 new_population = np.array([distort(model) for i in range(population)])
 # generations to train for
-num_generations = 1
+num_generations = 10
 
 for generation in range(num_generations):
     print("Generation : ", generation)
@@ -114,8 +115,6 @@ print("weights_vector")
 print(weights_vector)
 print("Best solution fitness : ", fitness[best_match_idx])
 
-file = open("lulli.txt", 'w+')
-file.write(str(list(weights_vector)))
 
 print("errors:")
 error(get_errors(team_secret_key, list(weights_vector)))
@@ -125,3 +124,5 @@ new_error = cal_pop_fitness([weights_vector])
 if new_error<prev_error:
     print('BETTER :):):):):)')
     submit(team_secret_key, list(weights_vector))
+    file = open("lulli.txt", 'w+')
+    file.write(str(list(weights_vector)))
