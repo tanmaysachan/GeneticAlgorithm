@@ -9,8 +9,8 @@ team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
 def cal_pop_fitness(pop):
     fitness = [get_errors(team_secret_key, list(i)) for i in pop]
     # fitness = [[i,2*i] for i in range(len(pop))]
-    fitness = [abs((abs(i[0]-i[1])**0)*(abs(i[1])**1.2)*(abs(i[0])**0.6)) for i in fitness]
-    # fitness = [i[0]*0.3+i[1] for i in fitness]
+    # fitness = [abs((abs(i[0]-i[1])**1)*(abs(i[1])**1.2)*(abs(i[0])**0.6)) for i in fitness]
+    fitness = [i[0]+i[1] for i in fitness]
     # print(fitness)
     return fitness
 
@@ -46,9 +46,9 @@ def mutation(offspring_crossover):
         while True:
             mutate_index = np.random.randint(0,10)
             cur = offspring_crossover[idx, mutate_index]
-            random_value = np.random.uniform(-1*(cur/15000), (cur/15000), 1)
-            if abs((offspring_crossover[idx, mutate_index] + random_value)[0]) <= 10:
-                offspring_crossover[idx, mutate_index] = offspring_crossover[idx, mutate_index] + random_value
+            random_value = np.random.uniform(-1,1,1)
+            if abs((offspring_crossover[idx, mutate_index] * random_value)[0]) <= 10:
+                offspring_crossover[idx, mutate_index] = offspring_crossover[idx, mutate_index] * random_value[0]
                 break
             else:
                 continue
@@ -61,17 +61,17 @@ def error(error_value):
 def distort(vector):
     to_ret = []
     for i in vector:
-        to_ret.append(i + np.random.uniform(low=-1*(i/15000), high=i/15000, size=1)[0])
+        to_ret.append(i * np.random.uniform(low=-1,high=1, size=1)[0])
 
     return np.array(to_ret)
 
 num_weights = 11
 
-population = 7
+population = 20
 
-num_parents_mating = 3
+num_parents_mating = 8
 
-fil = open('lulli.txt', 'r')
+fil = open('lulli2.txt', 'r')
 
 model = fil.readline()
 model = model.strip('[]').split(',')
@@ -85,7 +85,7 @@ print(prev_error)
 
 new_population = np.array([distort(model) for i in range(population)])
 # generations to train for
-num_generations = 15
+num_generations = 9
 
 for generation in range(num_generations):
     print("Generation : ", generation)
@@ -126,5 +126,5 @@ new_error = cal_pop_fitness([weights_vector])
 if new_error < prev_error:
     print('BETTER :):):):):)')
     submit(team_secret_key, list(weights_vector))
-    file = open("lulli.txt", 'w+')
+    file = open("lulli3.txt", 'w+')
     file.write(str(list(weights_vector)))
