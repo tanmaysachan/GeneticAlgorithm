@@ -1,14 +1,14 @@
 import numpy as np
 from client_moodle import get_errors, submit
 
-# team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
-team_secret_key = 'iYL7HCll9GU7hDiil3sQKqnJJX107Zs2YD4dLDeQWzdWpMInCr' # Fiza - team10
+team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
+# team_secret_key = 'iYL7HCll9GU7hDiil3sQKqnJJX107Zs2YD4dLDeQWzdWpMInCr' # Fiza - team10
 
 
 def cal_pop_fitness(pop):
     fitness = [get_errors(team_secret_key, list(i)) for i in pop]
     # fitness = [[i,2*i] for i in range(len(pop))]
-    fitness = [abs(i[0]-i[1])+abs(i[1]*0.5) for i in fitness]
+    fitness = [abs(i[0]-i[1]) for i in fitness]
     # fitness = [i[0]*0.3+i[1] for i in fitness]
     # print(fitness)
     return fitness
@@ -45,9 +45,9 @@ def mutation(offspring_crossover):
         while(True):
             mutate_index = np.random.randint(0,10)
             cur = offspring_crossover[idx, mutate_index]
-            random_value = np.random.uniform(-1*(cur/700), (cur/700), 1)
-            if abs((offspring_crossover[idx, mutate_index] + random_value)[0]) <= 10:
-                offspring_crossover[idx, mutate_index] = offspring_crossover[idx, mutate_index] + random_value
+            random_value = np.random.uniform(-1,1, 1)
+            if abs((offspring_crossover[idx, mutate_index] * random_value)[0]) <= 10:
+                offspring_crossover[idx, mutate_index] = offspring_crossover[idx, mutate_index] * random_value
                 break
             else:
                 continue
@@ -66,15 +66,16 @@ def distort(vector):
 
 num_weights = 11
 
-population = 5
+population = 40
 
-num_parents_mating = 3
+num_parents_mating = 15
 
 fil = open('lulli.txt', 'r')
 
 model = fil.readline()
 model = model.strip('[]').split(',')
 model = [float(i) for i in model]
+error(get_errors(team_secret_key, model))
 prev_error = cal_pop_fitness([model])
 print(prev_error)
 #model = [ 0.00000000e+00,  1.28200354e-01, -6.05800043e+00,  5.29444159e-02,
@@ -83,7 +84,7 @@ print(prev_error)
 
 new_population = np.array([distort(model) for i in range(population)])
 # generations to train for
-num_generations = 10
+num_generations = 20
 
 for generation in range(num_generations):
     print("Generation : ", generation)
@@ -119,10 +120,10 @@ print("Best solution fitness : ", fitness[best_match_idx])
 print("errors:")
 error(get_errors(team_secret_key, list(weights_vector)))
 new_error = cal_pop_fitness([weights_vector])
+submit(team_secret_key, list(weights_vector))
 
 # submit stuff
 if new_error<prev_error:
     print('BETTER :):):):):)')
-    submit(team_secret_key, list(weights_vector))
     file = open("lulli.txt", 'w+')
     file.write(str(list(weights_vector)))
