@@ -2,6 +2,7 @@ import json
 import requests
 import numpy as np
 
+team_secret_key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
 ######### DO NOT CHANGE ANYTHING IN THIS FILE ##################
 API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
@@ -50,10 +51,10 @@ if __name__ == "__main__":
     to verify that the server is working for your ID.
     """
     key = 'I22KGMKf3ZqtxxvxklykgAlk1dQZvVqhgfZT1i8NWjOgBC4ntl'
-    key2 =  'ggtmRNHQbP3d1E64nUBDeasbxtXKeoM6mhAxzJ4iMwzUhqhhfD' # fiza - team10
+    # key2 =  'ggtmRNHQbP3d1E64nUBDeasbxtXKeoM6mhAxzJ4iMwzUhqhhfD' # fiza - team10
     err = get_errors(key2, list(-np.arange(0,1.1,0.1)))
     assert len(err) == 2
 
-    submit_status = submit(key2, list(-np.arange(0,1.1,0.1)))
-    assert "submitted" in submit_status
+    # submit_status = submit(key2, list(-np.arange(0,1.1,0.1)))
+    # assert "submitted" in submit_status
     
